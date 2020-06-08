@@ -1,2 +1,3 @@
 # Personalized-Music-Recommendation
-Music recommendations for you
+
+![Output sample](other/music.jpeg)
