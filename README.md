@@ -1,3 +1,3 @@
-# Personalized-Music-Recommendation
+# Music-Recommendation-System
 
 ![Output sample](other/music.jpeg)
