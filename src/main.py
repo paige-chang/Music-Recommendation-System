@@ -1,9 +1,7 @@
-from utilities import *
-from embedding import *
-from environment import *
-from model import *
-from test import *
-from train import *
+from src.utilities import *
+from src.embedding import *
+from src.environment import *
+from src.train import *
 import pandas as pd
 import warnings
 warnings.filterwarnings('ignore')

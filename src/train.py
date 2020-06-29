@@ -1,5 +1,5 @@
-from model import *
-from utilities import Noise
+from src.model import *
+from src.utilities import Noise
 import tensorflow as tf
 import time
 
