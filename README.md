@@ -1,3 +1,9 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:acd39c01e0b126588efb4cbaa43a440f2cca1372f0deec5f1b3e386b8190d1bc
-size 455
+MusicBox - songs just for you
+
+MusicBox is a music recommendation system that help to discover new songs for users. The system is built based on deep reinforcement learning algorithm with the Spotify Sequential Skip Prediction dataset. You can read more about the project at my blog https://medium.com/@paige.c.chang/music-box-8576d5d1233d.
+
+Reference
+
+https://arxiv.org/abs/1801.00209
+https://github.com/egipcy/LIRD
+https://github.com/luozachary/drl-rec
