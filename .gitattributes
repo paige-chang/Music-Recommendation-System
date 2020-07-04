@@ -1,0 +1,5 @@
+LICENSE filter=lfs diff=lfs merge=lfs -text
+README.md filter=lfs diff=lfs merge=lfs -text
+data filter=lfs diff=lfs merge=lfs -text
+notebook filter=lfs diff=lfs merge=lfs -text
+src filter=lfs diff=lfs merge=lfs -text
