@@ -1,7 +1,7 @@
 class Embeddings():
 
         '''
-        Returns Embeddings and embeding metadata after initialization with item_embeddings
+        Returns Embeddings and embedding metadata after initialization with item_embeddings
         '''
 
     def __init__(self, item_embeddings):

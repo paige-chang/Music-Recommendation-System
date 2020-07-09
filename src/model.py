@@ -1,3 +1,5 @@
+# DDPG model with actor-critic framework
+
 import numpy as np
 import random
 import tensorflow as tf
@@ -8,9 +10,11 @@ from keras.layers import Dense, Dropout
 
 class Actor():
     
-    ''' Policy function approximator'''
+    ''' 
+    Policy function approximator
+    '''
     
-    def __init__(self, sess, state_space_size, action_space_size, batch_size, ra_length, history_length, embedding_size, tau, learning_rate, scope='actor'):
+    def __init__(self, sess, state_space_size, action_space_size, batch_size, ra_length, history_length, embedding_size, tau, learning_rate, scope = 'actor'):
         
         self.sess = sess
         self.state_space_size = state_space_size
@@ -39,11 +43,11 @@ class Actor():
             # Update target network weights 
             self.update_target_network_params = [self.target_network_params[i].assign(
             tf.multiply(self.tau, self.network_params[i]) +
-            tf.multiply(1 - self.tau, self.target_network_params[i]))for i in range(len(self.target_network_params))]
+            tf.multiply(1 - self.tau, self.target_network_params[i])) for i in range(len(self.target_network_params))]
 
             # Gradient computation from Critic's action_gradients
             self.action_gradients = tf.placeholder(tf.float32, [None, self.action_space_size])
-            gradients = tf.gradients(tf.reshape(self.action_weights, [self.batch_size, self.action_space_size], name='42222222222'),
+            gradients = tf.gradients(tf.reshape(self.action_weights, [self.batch_size, self.action_space_size], name = '42'),
                                      self.network_params, self.action_gradients)
             params_gradients = list(map(lambda x: tf.div(x, self.batch_size * self.action_space_size), gradients))
 
@@ -52,17 +56,19 @@ class Actor():
 
     def _build_net(self, scope):
         
-        ''' Build the (target) Actor network'''
+        ''' 
+        Build the (target) Actor network
+        '''
 
         def gather_last_output(data, seq_lens):
             def cli_value(x, v):
-                y = tf.constant(v, shape=x.get_shape(), dtype=tf.int64)
+                y = tf.constant(v, shape = x.get_shape(), dtype = tf.int64)
                 x = tf.cast(x, tf.int64)
                 return tf.where(tf.greater(x, y), x, y)
 
-            batch_range = tf.range(tf.cast(tf.shape(data)[0], dtype=tf.int64), dtype=tf.int64)
-            tmp_end = tf.map_fn(lambda x: cli_value(x, 0), seq_lens - 1, dtype=tf.int64)
-            indices = tf.stack([batch_range, tmp_end], axis=1)
+            batch_range = tf.range(tf.cast(tf.shape(data)[0], dtype = tf.int64), dtype = tf.int64)
+            tmp_end = tf.map_fn(lambda x: cli_value(x, 0), seq_lens - 1, dtype = tf.int64)
+            indices = tf.stack([batch_range, tmp_end], axis = 1)
             return tf.gather_nd(data, indices)
 
         with tf.variable_scope(scope):
@@ -72,11 +78,11 @@ class Actor():
             state_ = tf.reshape(state, [-1, self.history_length, self.embedding_size])
             sequence_length = tf.placeholder(tf.int32, [None], 'sequence_length')
             cell = tf.nn.rnn_cell.GRUCell(self.embedding_size,
-                                        activation=tf.nn.relu,
-                                        kernel_initializer=tf.initializers.random_normal(),
-                                        bias_initializer=tf.zeros_initializer())
-            outputs, _ = tf.nn.dynamic_rnn(cell, state_, dtype=tf.float32, sequence_length=sequence_length)
-            last_output = gather_last_output(outputs, sequence_length) # TODO: replace by h
+                                        activation = tf.nn.relu,
+                                        kernel_initializer = tf.initializers.random_normal(),
+                                        bias_initializer = tf.zeros_initializer())
+            outputs, _ = tf.nn.dynamic_rnn(cell, state_, dtype = tf.float32, sequence_length = sequence_length)
+            last_output = gather_last_output(outputs, sequence_length) 
             x = tf.keras.layers.Dense(self.ra_length * self.embedding_size)(last_output)
             action_weights = tf.reshape(x, [-1, self.ra_length, self.embedding_size])
 
@@ -84,10 +90,12 @@ class Actor():
 
     def train(self, state, sequence_length, action_gradients):
         
-        '''  Compute ∇_a.Q(s, a|θ^µ).∇_θ^π.f_θ^π(s)'''
+        '''
+        Compute ∇_a.Q(s, a|θ^µ).∇_θ^π.f_θ^π(s)
+        '''
         
         self.sess.run(self.optimizer,
-                      feed_dict={
+                      feed_dict = {
                           self.state: state,
                           self.sequence_length: sequence_length,
                           self.action_gradients: action_gradients})
@@ -95,14 +103,14 @@ class Actor():
     def predict(self, state, sequence_length):
         
         return self.sess.run(self.action_weights,
-                            feed_dict={
+                            feed_dict = {
                                 self.state: state,
                                 self.sequence_length: sequence_length})
 
     def predict_target(self, state, sequence_length):
         
         return self.sess.run(self.target_action_weights,
-                            feed_dict={
+                            feed_dict = {
                                 self.target_state: state,
                                 self.target_sequence_length: sequence_length})
 
@@ -114,7 +122,7 @@ class Actor():
         
         self.sess.run(self.update_target_network_params)
       
-    def get_recommendation_list(self, ra_length, noisy_state, embeddings, target=False):
+    def get_recommendation_list(self, ra_length, noisy_state, embeddings, target = False):
         
         '''
         Args:
@@ -130,10 +138,10 @@ class Actor():
             
             '''
             Args:
-            weights: w_t^k shape=(embedding_size,).
-            embedding: e_i shape=(embedding_size,).
+            weights: w_t^k shape = (embedding_size,).
+            embedding: e_i shape = (embedding_size,).
             Returns:
-            score of the item i: score_i=w_t^k.e_i^T shape=(1,).
+            score of the item i: score_i = w_t^k.e_i^T shape = (1,).
             '''
 
             ret = np.dot(weights, embedding.T)
@@ -156,9 +164,11 @@ class Actor():
 
 class Critic():
     
-    ''' Value function approximator'''
+    ''' 
+    Value function approximator
+    '''
     
-    def __init__(self, sess, state_space_size, action_space_size, history_length, embedding_size, tau, learning_rate, scope='critic'):
+    def __init__(self, sess, state_space_size, action_space_size, history_length, embedding_size, tau, learning_rate, scope = 'critic'):
         self.sess = sess
         self.state_space_size = state_space_size
         self.action_space_size = action_space_size
@@ -171,11 +181,11 @@ class Critic():
         with tf.variable_scope(self.scope):
             # Build Critic network
             self.critic_Q_value, self.state, self.action, self.sequence_length = self._build_net('estimator_critic')
-            self.network_params = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='estimator_critic')
+            self.network_params = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'estimator_critic')
 
             # Build target Critic network
             self.target_Q_value, self.target_state, self.target_action, self.target_sequence_length = self._build_net('target_critic')
-            self.target_network_params = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='target_critic')
+            self.target_network_params = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'target_critic')
 
             # Initialize target network weights with network weights (θ^µ′ ← θ^µ)
             self.init_target_network_params = [self.target_network_params[i].assign(self.network_params[i])
@@ -196,16 +206,19 @@ class Critic():
             self.action_gradients = tf.gradients(self.critic_Q_value, self.action)
 
     def _build_net(self, scope):
-        ''' Build the (target) Critic network'''
+        
+        ''' 
+        Build the (target) Critic network
+        '''
 
         def gather_last_output(data, seq_lens):
             def cli_value(x, v):
-                y = tf.constant(v, shape=x.get_shape(), dtype=tf.int64)
+                y = tf.constant(v, shape = x.get_shape(), dtype = tf.int64)
                 return tf.where(tf.greater(x, y), x, y)
 
-            this_range = tf.range(tf.cast(tf.shape(seq_lens)[0], dtype=tf.int64), dtype=tf.int64)
-            tmp_end = tf.map_fn(lambda x: cli_value(x, 0), seq_lens - 1, dtype=tf.int64)
-            indices = tf.stack([this_range, tmp_end], axis=1)
+            this_range = tf.range(tf.cast(tf.shape(seq_lens)[0], dtype = tf.int64), dtype = tf.int64)
+            tmp_end = tf.map_fn(lambda x: cli_value(x, 0), seq_lens - 1, dtype = tf.int64)
+            indices = tf.stack([this_range, tmp_end], axis = 1)
             return tf.gather_nd(data, indices)
 
         with tf.variable_scope(scope):
@@ -214,26 +227,28 @@ class Critic():
             state = tf.placeholder(tf.float32, [None, self.state_space_size], 'state')
             state_ = tf.reshape(state, [-1, self.history_length, self.embedding_size])
             action = tf.placeholder(tf.float32, [None, self.action_space_size], 'action')
-            sequence_length = tf.placeholder(tf.int64, [None], name='critic_sequence_length')
+            sequence_length = tf.placeholder(tf.int64, [None], name = 'critic_sequence_length')
             cell = tf.nn.rnn_cell.GRUCell(self.history_length,
-                                        activation=tf.nn.relu,
-                                        kernel_initializer=tf.initializers.random_normal(),
-                                        bias_initializer=tf.zeros_initializer())
-            predicted_state, _ = tf.nn.dynamic_rnn(cell, state_, dtype=tf.float32, sequence_length=sequence_length)
+                                        activation = tf.nn.relu,
+                                        kernel_initializer = tf.initializers.random_normal(),
+                                        bias_initializer = tf.zeros_initializer())
+            predicted_state, _ = tf.nn.dynamic_rnn(cell, state_, dtype = tf.float32, sequence_length = sequence_length)
             predicted_state = gather_last_output(predicted_state, sequence_length)
 
-            inputs = tf.concat([predicted_state, action], axis=-1)
-            layer1 = tf.layers.Dense(32, activation=tf.nn.relu)(inputs)
-            layer2 = tf.layers.Dense(16, activation=tf.nn.relu)(layer1)
+            inputs = tf.concat([predicted_state, action], axis = -1)
+            layer1 = tf.layers.Dense(32, activation = tf.nn.relu)(inputs)
+            layer2 = tf.layers.Dense(16, activation = tf.nn.relu)(layer1)
             critic_Q_value = tf.layers.Dense(1)(layer2)
             return critic_Q_value, state, action, sequence_length
 
     def train(self, state, action, sequence_length, expected_reward):
         
-        ''' Minimize MSE between expected reward and target Critic's Q-value'''
+        ''' 
+        Minimize MSE between expected reward and target Critic's Q-value
+        '''
         
         return self.sess.run([self.critic_Q_value, self.loss, self.optimizer],
-                            feed_dict={
+                            feed_dict = {
                                 self.state: state,
                                 self.action: action,
                                 self.sequence_length: sequence_length,
@@ -241,30 +256,36 @@ class Critic():
 
     def predict(self, state, action, sequence_length):
         
-        ''' Returns Critic's predicted Q-value'''
+        ''' 
+        Returns Critic's predicted Q-value
+        '''
         
         return self.sess.run(self.critic_Q_value,
-                            feed_dict={
+                            feed_dict = {
                                 self.state: state,
                                 self.action: action,
                                 self.sequence_length: sequence_length})
 
     def predict_target(self, state, action, sequence_length):
         
-        ''' Returns target Critic's predicted Q-value'''
+        ''' 
+        Returns target Critic's predicted Q-value
+        '''
         
         return self.sess.run(self.target_Q_value,
-                            feed_dict={
+                            feed_dict = {
                                 self.target_state: state,
                                 self.target_action: action,
                                 self.target_sequence_length: sequence_length})
 
     def get_action_gradients(self, state, action, sequence_length):
         
-        ''' Returns ∇_a.Q(s, a|θ^µ). '''
+        ''' 
+        Returns ∇_a.Q(s, a|θ^µ). 
+        '''
         
         return np.array(self.sess.run(self.action_gradients,
-                            feed_dict={
+                            feed_dict = {
                                 self.state: state,
                                 self.action: action,
                                 self.sequence_length: sequence_length})[0])
@@ -279,7 +300,9 @@ class Critic():
         
 class ReplayMemory():
     
-    ''' Replay memory D in article'''
+    ''' 
+    Replay memory D in article
+    '''
     
     def __init__(self, buffer_size):
         self.buffer_size = buffer_size
@@ -320,7 +343,7 @@ def experience_replay(replay_memory, batch_size, actor, critic, embeddings, ra_l
     n_states = np.array([s[3] for s in samples]).reshape(-1, state_space_size)
 
     # Generate a′ by target Actor network 
-    n_actions = actor.get_recommendation_list(ra_length, states, embeddings, target=True).reshape(-1, action_space_size)
+    n_actions = actor.get_recommendation_list(ra_length, states, embeddings, target = True).reshape(-1, action_space_size)
 
     # Calculate predicted Q′(s′, a′|θ^µ′) value
     target_Q_value = critic.predict_target(n_states, n_actions, [ra_length] * batch_size)
