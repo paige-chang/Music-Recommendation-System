@@ -2,26 +2,26 @@ import pandas as pd
 import numpy as np
 
 class Environment():
-    
+
     def __init__(self, data, embeddings, alpha, gamma, fixed_length):
-        
+
         self.embeddings = embeddings
 
         self.embedded_data = pd.DataFrame()
-        self.embedded_data['state'] = [np.array([embeddings.get_embedding(item_id) 
+        self.embedded_data['state'] = [np.array([embeddings.get_embedding(item_id)
                                                  for item_id in row['state']]) for _, row in data.iterrows()]
-        self.embedded_data['action'] = [np.array([embeddings.get_embedding(item_id) 
+        self.embedded_data['action'] = [np.array([embeddings.get_embedding(item_id)
                                                   for item_id in row['action']]) for _, row in data.iterrows()]
         self.embedded_data['reward'] = data['reward']
 
-        self.alpha = alpha 
-        self.gamma = gamma 
+        self.alpha = alpha
+        self.gamma = gamma
         self.fixed_length = fixed_length
         self.current_state = self.reset()
         self.groups = self.get_groups()
 
     def reset(self):
-        
+
         self.init_state = self.embedded_data['state'].sample(1).values[0]
         return self.init_state
 
@@ -36,20 +36,22 @@ class Environment():
           current_state: updated state.
         '''
 
-        # Compute overall reward 
+        # Compute overall reward
         simulated_rewards, cumulated_reward = self.simulate_rewards(self.current_state.reshape((1, -1)), actions.reshape((1, -1)))
 
-        for k in range(len(simulated_rewards)): 
+        for k in range(len(simulated_rewards)):
             if simulated_rewards[k] > 0:
                 self.current_state = np.append(self.current_state, [actions[k]], axis=0)
-                if self.fixed_length: 
+                if self.fixed_length:
                     self.current_state = np.delete(self.current_state, 0, axis=0)
 
         return cumulated_reward, self.current_state
 
     def get_groups(self):
-        
-        ''' Calculate average state/action value for each group'''
+
+        '''
+        Calculate average state/action value for each group
+        '''
 
         groups = []
         for rewards, group in self.embedded_data.groupby(['reward']):
@@ -58,14 +60,14 @@ class Environment():
             actions = np.array(list(group['action'].values))
             groups.append({
                 'size': size,
-                'rewards': rewards, 
+                'rewards': rewards,
                 'average state': (np.sum(states / np.linalg.norm(states, 2, axis=1)[:, np.newaxis], axis=0) / size).reshape((1, -1)), # s_x^-
                 'average action': (np.sum(actions / np.linalg.norm(actions, 2, axis=1)[:, np.newaxis], axis=0) / size).reshape((1, -1)) # a_x^-
               })
         return groups
 
     def simulate_rewards(self, current_state, chosen_actions, reward_type='grouped cosine'):
-        
+
         '''
         Calculate simulated rewards.
         Args:
@@ -89,10 +91,10 @@ class Environment():
             probabilities = np.array([g['size'] for g in self.groups]) *            [(self.alpha * (np.dot(current_state, g['average state'].T) / np.linalg.norm(current_state, 2))            + (1 - self.alpha) * (np.dot(chosen_actions, g['average action'].T) / np.linalg.norm(chosen_actions, 2)))
              for g in self.groups]
         elif reward_type == 'grouped cosine':
-            probabilities = [cosine_state_action(current_state, chosen_actions, g['average state'], g['average action']) 
+            probabilities = [cosine_state_action(current_state, chosen_actions, g['average state'], g['average action'])
                            for g in self.groups]
 
-        # Normalize 
+        # Normalize
         probabilities = np.array(probabilities) / sum(probabilities)
 
         # Get most probable rewards
@@ -111,4 +113,3 @@ class Environment():
             cumulated_reward = np.sum([p * overall_reward(g['rewards'], self.gamma) for p, g in zip(probabilities, self.groups)])
 
         return returned_rewards, cumulated_reward
-
