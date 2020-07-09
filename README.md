@@ -4,7 +4,7 @@
 </p>
 
 ## Description
-MusicBox is my project as AI fellow at Insight Data Science. The goal of the project is to build a recommendation system using reinforce learning to solve markov decision process. You can read more about the project at my blog https://medium.com/@paige.c.chang/music-box-8576d5d1233d.
+MusicBox is my project as AI fellow at Insight Data Science. The goal of the project is to build a new generation of recommendation system that learns sequential patterns of user behavior using reinforcement learning. You can read more about the project at my blog https://medium.com/@paige.c.chang/music-box-8576d5d1233d.
 
 ## Data
 Spotify releases this dataset in the Sequential Skip Prediction Challenge. As the dataset is very large (e.g. 130 million listening sessions), I will not store it here at the github. If you are interested, please check out their website [https://www.aicrowd.com/challenges/spotify-sequential-skip-prediction-challenge](https://www.aicrowd.com/challenges/spotify-sequential-skip-prediction-challenge). 
