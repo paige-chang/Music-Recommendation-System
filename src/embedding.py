@@ -1,8 +1,8 @@
 class Embeddings():
 
-        '''
-        Returns Embeddings and embedding metadata after initialization with item_embeddings
-        '''
+    '''
+    Returns Embeddings and embedding metadata after initialization with item_embeddings
+    '''
 
     def __init__(self, item_embeddings):
         self.item_embeddings = item_embeddings
@@ -22,9 +22,9 @@ class Embeddings():
 
 class EmbeddingsGenerator():
 
-        '''
-        Returns Embeddings after initialization with train_users and data
-        '''
+    '''
+    Returns Embeddings after initialization with train_users and data
+    '''
         
     def  __init__(self, train_users, data):
 
