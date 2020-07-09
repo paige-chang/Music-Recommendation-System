@@ -1,5 +1,6 @@
 from distutils.core import setup
 
+# This is the setup
 setup(name = 'Music-Recommendation-System',
       author = 'Paige Chang',
       author_email= = 'paige.c.chang@gmail.com',
