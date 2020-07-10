@@ -1,7 +1,7 @@
-# Train RL agent
+## Model training
 
-from src.model import *
-from src.utilities import Noise
+from model import *
+from utilities import Noise
 import tensorflow as tf
 import time
 
@@ -45,7 +45,7 @@ def agent_train(sess, environment, actor, critic, embeddings, history_length, ra
 
         states = environment.reset() # Initialize state s_0 from previous sessions
         
-        if (i_session + 1) % 10 = =  0: # Update average parameters every 10 episodes
+        if (i_session + 1) % 10 == 0: # Update average parameters every 10 episodes
             environment.groups = environment.get_groups()
           
         exploration_noise = Noise(history_length * embeddings.size())
@@ -69,16 +69,16 @@ def agent_train(sess, environment, actor, critic, embeddings, history_length, ra
 
             states = next_states # Set s_t = s_t+1'
 
-            session_reward + =  rewards
+            session_reward += rewards
             
             # Parameter Updating Stage'
-            if replay_memory.size() > =  batch_size: # Experience replay
+            if replay_memory.size() >= batch_size: # Experience replay
                 replay = True
                 replay_Q_value, critic_loss = experience_replay(replay_memory, batch_size,
                   actor, critic, embeddings, ra_length, history_length * embeddings.size(),
                   ra_length * embeddings.size(), discount_factor)
-                session_Q_value + =  replay_Q_value
-                session_critic_loss + =  critic_loss
+                session_Q_value += replay_Q_value
+                session_critic_loss += critic_loss
 
             summary_str = sess.run(summary_ops,
                                   feed_dict = {summary_vars[0]: session_reward,

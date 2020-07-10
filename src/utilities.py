@@ -1,4 +1,4 @@
-# Helper functions
+## Helper functions
 
 import s3fs
 import random
@@ -35,9 +35,9 @@ class DataGenerator():
         fs = s3fs.S3FileSystem()
         with fs.open(itempath) as f:
             # Skip the rows with nan. Otherwise, the dtype will not be correct
-            music = pd.read_csv(f, compression = 'gzip', skiprows = [1853312, 3706390]) 
-        music = music.rename(columns = {music.columns[0]:'track_id'})  
-        music = music[music.us_popularity_estimate > =  95] # Focus on the song tracks that have good popularity
+            music = pd.read_csv(f, compression = 'gzip', skiprows = [1853312, 3706390])
+        music = music.rename(columns = {music.columns[0]:'track_id'})
+        music = music[music.us_popularity_estimate>=95] # Focus on the song tracks that have good popularity
 
         return music
     
@@ -52,15 +52,15 @@ class DataGenerator():
         
         fs = s3fs.S3FileSystem()
         with fs.open(datapath) as f:
-            user = pd.read_csv(f, compression = 'gzip', nrows = 100000) 
-        user = user.rename(columns = {user.columns[0]:'session_id'})  
+            user = pd.read_csv(f, compression = 'gzip', nrows = 100000)
+        user = user.rename(columns = {user.columns[0]:'session_id'})
         
         # Correct the labeling of skip
         # rating = 1 if user doesn't the skip the music, otherwise rating = 0
-        user = user[(user.skip_2 = True) | (user.skip_2 = 'true') | (user.skip_2 = False) | (user.skip_2 = 'false')]
-        user.skip_2[user.skip_2 = 'true'] = True
-        user.skip_2[user.skip_2 = 'false'] = False
-        user['rating'] = user.skip_2.astype(int) * -1 + 1
+        user = user[(user.skip_2==True) | (user.skip_2=='true') | (user.skip_2==False) | (user.skip_2=='false')]
+        user.skip_2[user.skip_2=='true'] = True
+        user.skip_2[user.skip_2=='false'] = False
+        user['rating'] = user.skip_2.astype(int)*-1+1
         
         return user
     
@@ -74,7 +74,7 @@ class DataGenerator():
         music = self.load_music_data(itempath)
         data = self.load_user_data(datapath)
         data = pd.merge(data, music, how = 'inner', left_on = ['track_id_clean'], right_on = ['track_id'])
-        data = data.groupby(['session_id','session_length']).filter(lambda x: len(x) = 20) # Filter out the sessions that are too short
+        data = data.groupby(['session_id','session_length']).filter(lambda x: len(x) == 20) # Filter out the sessions that are too short
         data['session_id'] = LabelEncoder().fit_transform(data['session_id'])
         data['music_id'] = LabelEncoder().fit_transform(data['track_id'])
         
@@ -93,13 +93,13 @@ class DataGenerator():
         
         historic_users = []
         for i, u in enumerate(self.users):
-            temp = self.data[self.data['session_id'] = u]
+            temp = self.data[self.data['session_id'] == u]
             temp = temp.sort_values('session_position').reset_index()
             temp.drop('index', axis = 1, inplace = True)
             historic_users.append(temp)
         return historic_users
     
-    def sample_histo(self, user_histo, action_ratio = 0.8, max_samp_by_user = 10,  max_state = 10, max_action = 5, 
+    def sample_histo(self, user_histo, action_ratio = 0.8, max_samp_by_user = 10,  max_state = 10, max_action = 5,
                  nb_states = [], nb_actions = []):
         
         '''
@@ -150,11 +150,11 @@ class DataGenerator():
             nb_states = [min(random.randint(1, sep), max_state) for i in range(nb_sample)]
         if not nb_actions:
             nb_actions = [min(random.randint(1, n - sep), max_action) for i in range(nb_sample)]
-        assert len(nb_states) = len(nb_actions), 'Given array must have the same size'
+        assert len(nb_states) == len(nb_actions), 'Given array must have the same size'
         
         states  = []
         actions = []
-        # Select samples in history 
+        # Select samples in histo 
         for i in range(len(nb_states)):
             sample_states = user_histo.iloc[0:sep].sample(nb_states[i])
             sample_actions = user_histo.iloc[-(n - sep):].sample(nb_actions[i])
@@ -163,14 +163,14 @@ class DataGenerator():
             sample_action = []
             for j in range(nb_states[i]):
                 row = sample_states.iloc[j]
-                # Format State
-                state = str(row.loc['music_id']) + '&' + str(row.loc['rating'].astype(int)) 
+                # Formate State
+                state = str(row.loc['music_id'])+'&'+str(row.loc['rating'].astype(int))
                 sample_state.append(state)
           
             for j in range(nb_actions[i]):
                 row = sample_actions.iloc[j]
-                # Format Action 
-                action = str(row.loc['music_id']) + '&' + str(row.loc['rating'].astype(int))
+                # Formate Action 
+                action = str(row.loc['music_id'])+'&'+str(row.loc['rating'].astype(int))
                 sample_action.append(action)
 
             states.append(sample_state)
@@ -205,7 +205,7 @@ class DataGenerator():
         self.user_train = [h.iloc[0,0] for h in self.train]
         self.user_test  = [h.iloc[0,0] for h in self.test]
         
-    def write_csv(self, filename, histo_to_write, delimiter = ';', action_ratio = 0.8, max_samp_by_user = 10,  
+    def write_csv(self, filename, histo_to_write, delimiter=';', action_ratio = 0.8, max_samp_by_user = 10,
                   max_state = 10, max_action = 5, nb_states = [], nb_actions = []):
         
         '''
@@ -248,11 +248,11 @@ class DataGenerator():
             for user_histo in histo_to_write:
                 states, actions = self.sample_histo(user_histo, action_ratio, max_samp_by_user, max_state, max_action, nb_states, nb_actions)
                 for i in range(len(states)):
-                    # Format state
+                    # FORMAT STATE
                     state_str   = '|'.join(states[i])
-                    # Format action 
+                    # FORMAT ACTION
                     action_str  = '|'.join(actions[i])
-                    # Format n_state
+                    # FORMAT N_STATE
                     n_state_str = state_str + '|' + action_str
                     f_writer.writerow([state_str, action_str, n_state_str])
                     
@@ -271,7 +271,7 @@ class Noise():
         self.state = np.ones(self.action_space_size) * self.mu
 
     def get(self):
-        self.state + =  self.theta * (self.mu - self.state) + self.sigma * np.random.rand(self.action_space_size)
+        self.state += self.theta * (self.mu - self.state) + self.sigma * np.random.rand(self.action_space_size)
         return self.state
     
     
@@ -295,9 +295,7 @@ def read_file(data_path):
 
 def read_embeddings(embeddings_path):
     
-    '''
-    Load embeddings (a vector for each item)
-    '''
+    ''' Load embeddings (a vector for each item)'''
     
     embeddings = pd.read_csv(embeddings_path, sep = ';')
 

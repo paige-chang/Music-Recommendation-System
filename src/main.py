@@ -1,13 +1,15 @@
-from src.utilities import *
-from src.embedding import *
-from src.environment import *
-from src.train import *
+from utilities import *
+from embedding import *
+from environment import *
+from model import *
+from test import *
+from train import *
 import pandas as pd
 import warnings
 warnings.filterwarnings('ignore')
 
 def run(data, embeddings, history_length, ra_length, discount_factor = 0.99, actor_lr = 0.00005, critic_lr = 0.001,
-        tau = 0.001, batch_size = 64, nb_rounds = 50, nb_episodes = 5, alpha = 0.2, gamma = 0.9, buffer_size = 10000, 
+        tau = 0.001, batch_size = 64, nb_rounds = 50, nb_episodes = 5, alpha = 0.2,gamma = 0.9, buffer_size=10000,
         fixed_length = True):
    
     state_space_size = embeddings.size() * history_length
@@ -31,7 +33,7 @@ def run(data, embeddings, history_length, ra_length, discount_factor = 0.99, act
     all_history = pd.Series(all_history)
     all_history.to_csv('history.csv')
     
-def main(training_set, track_features, history_length = 10, ra_length = 3):
+def main(training_set, track_features, history_length = 10, ra_length=3):
 
     dg = DataGenerator(training_set, track_features)
     dg.gen_train_test(train_ratio = 0.7, seed = 42)
@@ -47,6 +49,6 @@ def main(training_set, track_features, history_length = 10, ra_length = 3):
     embeddings = Embeddings(read_embeddings('embeddings.csv'))
     run(data, embeddings, history_length, ra_length)
         
-if __name__ = =  '__main__':
+if __name__ == '__main__':
     main('s3://paige-data/training_set_0.tar.gz', 's3://paige-data/Track_features.tar.gz')
 

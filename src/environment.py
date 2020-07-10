@@ -1,4 +1,4 @@
-# Stimulated environment
+## Stimulating user's feedback
 
 import pandas as pd
 import numpy as np
@@ -68,7 +68,7 @@ class Environment():
               })
         return groups
 
-    def simulate_rewards(self, current_state, chosen_actions, reward_type = 'grouped cosine'):
+    def simulate_rewards(self, current_state, chosen_actions, reward_type='grouped cosine'):
         
         '''
         Calculate simulated rewards.
@@ -86,13 +86,13 @@ class Environment():
             cosine_action = np.dot(a_t, a_i.T) / (np.linalg.norm(a_t, 2) * np.linalg.norm(a_i, 2))
             return (self.alpha * cosine_state + (1 - self.alpha) * cosine_action).reshape((1,))
 
-        if reward_type = 'normal':
+        if reward_type == 'normal':
             probabilities = [cosine_state_action(current_state, chosen_actions, row['state'], row['action'])
                            for _, row in self.embedded_data.iterrows()]
-        elif reward_type = 'grouped average':
-            probabilities = np.array([g['size'] for g in self.groups]) * [(self.alpha * (np.dot(current_state, g['average state'].T) / np.linalg.norm(current_state, 2)) + (1 - self.alpha) * (np.dot(chosen_actions, g['average action'].T) / np.linalg.norm(chosen_actions, 2)))
+        elif reward_type == 'grouped average':
+            probabilities = np.array([g['size'] for g in self.groups]) *            [(self.alpha * (np.dot(current_state, g['average state'].T) / np.linalg.norm(current_state, 2))            + (1 - self.alpha) * (np.dot(chosen_actions, g['average action'].T) / np.linalg.norm(chosen_actions, 2)))
              for g in self.groups]
-        elif reward_type = 'grouped cosine':
+        elif reward_type == 'grouped cosine':
             probabilities = [cosine_state_action(current_state, chosen_actions, g['average state'], g['average action']) 
                            for g in self.groups]
 
@@ -100,7 +100,7 @@ class Environment():
         probabilities = np.array(probabilities) / sum(probabilities)
 
         # Get most probable rewards
-        if reward_type = 'normal':
+        if reward_type == 'normal':
             returned_rewards = self.embedded_data.iloc[np.argmax(probabilities)]['reward']
         elif reward_type in ['grouped average', 'grouped cosine']:
             returned_rewards = self.groups[np.argmax(probabilities)]['rewards']
@@ -110,7 +110,7 @@ class Environment():
 
         if reward_type in ['normal', 'grouped average']:
             cumulated_reward = overall_reward(returned_rewards, self.gamma)
-        elif reward_type = 'grouped cosine':
+        elif reward_type == 'grouped cosine':
             # Get probability weighted cumulated reward
             cumulated_reward = np.sum([p * overall_reward(g['rewards'], self.gamma) for p, g in zip(probabilities, self.groups)])
 
