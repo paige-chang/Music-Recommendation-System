@@ -7,10 +7,6 @@ import time
 
 def agent_train(sess, environment, actor, critic, embeddings, history_length, ra_length, buffer_size, batch_size, discount_factor, nb_episodes, filename_summary, nb_rounds):
     
-    '''
-    Algorithm 3 in article
-    '''
-
     # Set up summary operators
     def build_summaries():
         episode_reward = tf.Variable(0.)
