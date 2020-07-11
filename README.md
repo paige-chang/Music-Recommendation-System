@@ -6,7 +6,7 @@
 
 ## Music just for you
 
-MusicBox is my project as an AI fellow at Insight Data Science. The goal of the project is to build a new generation of recommender system that learns patterns of user behavior using deep reinforcement learning. 
+MusicBox is my project as an AI fellow at Insight Data Science. The goal of the project is to build a new generation of recommender system that learns patterns of user behavior through deep reinforcement learning. 
 
 ## Overview
 
@@ -22,14 +22,13 @@ DDPG is an algorithm that can concurrently learn a policy and a Q-function. DDPG
 
 To measure MusicBox's performance offline, I track multiple metrics such as music diversity and song skip rate. Compared to original methods used in the dataset, MusicBox recommends more diversity of music (9.3 % vs 7.6%), and also better identify songs that are skipped by users (49% vs 54%). 
 
-
 ## Data
 
 I built MusicBox based on a real-world dataset from Spotify. As the dataset is very large (e.g. 130 million listening sessions), I will not store it here on github. If you are interested, please check out their website [https://www.aicrowd.com/challenges/spotify-sequential-skip-prediction-challenge](https://www.aicrowd.com/challenges/spotify-sequential-skip-prediction-challenge).
 
 ## Limitations
 
-One major impediment of applying reinforcement learning to recommender system is the lack of a simulation platforms for sequential user interactions. This makes the full evaluation of MusicBox difficult, especially when it comes to reasoning about sequential ordering of songs in music recommendations. 
+One major impediment of applying reinforcement learning to recommender system is the lack of a simulation platforms for sequential user interactions. This makes the full evaluation of MusicBox difficult, especially when it comes to reasoning about ordering of songs in playlist. 
 
 ## Inspiration
 
