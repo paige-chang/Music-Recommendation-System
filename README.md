@@ -10,7 +10,7 @@ MusicBox is my project as an AI fellow at Insight Data Science. The goal of the 
 
 ## Overview
 
-MusicBox takes uers' listening sessions as input and outputs songs as recommendation. To build MusicBox being able to handle a large number of discrete actions (e.g. millions of songs in database), I implemented the model Deep Deterministic Policy Gradient (DDPG) with Tensorflow. 
+To build MusicBox being able to handle a large number of discrete actions (e.g. millions of songs in database), I implemented the model Deep Deterministic Policy Gradient (DDPG) with Tensorflow. 
 
 DDPG is an algorithm that can concurrently learn a policy and a Q-function. DDPG adopts an Actor-Critic scheme to model the sequential interactions between the users and recommender system. Based on the songs that a user has been listening to in a listening session, actor network takes the embedding of song features, builds a policy function that scores all music, and then recommends top three songs with the highest scores for the user. Next, Critic network uses approximation to learn a Q-value function, which judges if selected songs matches the current state of user behavior. According to the judgement from the Critic network, the Actor network updates its’ policy parameters to improve recommending performance in the following iterations. 
 
