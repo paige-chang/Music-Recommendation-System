@@ -6,7 +6,7 @@
 
 ## Music just for you
 
-MusicBox is my project as an AI fellow at Insight Data Science. The goal of the project is to build a new generation of recommender system that learns patterns of user behavior using reinforcement learning. 
+MusicBox is my project as an AI fellow at Insight Data Science. The goal of the project is to build a new generation of recommender system that learns patterns of user behavior using deep reinforcement learning. 
 
 ## Overview
 
