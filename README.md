@@ -31,7 +31,7 @@ One major impediment of applying reinforcement learning to recommender system is
 ```
 cd src
 from main import *
-run('../data/user_data.tar.gz', '../data/music_data.tar.gz')
+run('../data/user_mini_data.tar.gz', '../data/music_mini_data.tar.gz')
 ```
 
 ## Data
