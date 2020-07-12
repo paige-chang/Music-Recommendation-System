@@ -1,6 +1,5 @@
 ## Helper functions
 
-import s3fs
 import random
 import csv
 import numpy as np
@@ -31,15 +30,12 @@ class DataGenerator():
         datapath :  string
                     path to the music data
         '''
-        
-        fs = s3fs.S3FileSystem()
-        with fs.open(itempath) as f:
-            # Skip the rows with nan. Otherwise, the dtype will not be correct
-            music = pd.read_csv(f, compression = 'gzip', skiprows = [1853312, 3706390])
+
+        music = pd.read_csv(itempath, compression = 'gzip')
         music = music.rename(columns = {music.columns[0]:'track_id'})
         music = music[music.us_popularity_estimate>=95] # Focus on the song tracks that have good popularity
 
-        return music
+        return music	
     
     def load_user_data(self, datapath):
         
@@ -50,20 +46,15 @@ class DataGenerator():
                     path to the session data
         '''
         
-        fs = s3fs.S3FileSystem()
-        with fs.open(datapath) as f:
-            user = pd.read_csv(f, compression = 'gzip', nrows = 100000)
+        user = pd.read_csv(datapath, compression = 'gzip')
         user = user.rename(columns = {user.columns[0]:'session_id'})
         
         # Correct the labeling of skip
         # rating = 1 if user doesn't the skip the music, otherwise rating = 0
-        user = user[(user.skip_2==True) | (user.skip_2=='true') | (user.skip_2==False) | (user.skip_2=='false')]
-        user.skip_2[user.skip_2=='true'] = True
-        user.skip_2[user.skip_2=='false'] = False
         user['rating'] = user.skip_2.astype(int)*-1+1
         
         return user
-    
+   
     def load_datas(self, datapath, itempath):
         
         '''
@@ -278,7 +269,7 @@ class Noise():
 def read_file(data_path):
     
     '''
-    Load data from train.csv or test.csv
+    Load data from train_set.csv or test_set.csv
     '''
 
     data = pd.read_csv(data_path, sep = ';')

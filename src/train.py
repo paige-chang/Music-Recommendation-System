@@ -33,7 +33,6 @@ def agent_train(sess, environment, actor, critic, embeddings, history_length, ra
     replay = False
 
     start_time = time.time()
-    history = []
     for i_session in range(nb_episodes): 
         session_reward = 0
         session_Q_value = 0
@@ -84,12 +83,9 @@ def agent_train(sess, environment, actor, critic, embeddings, history_length, ra
             writer.add_summary(summary_str, i_session)
 
 
-        history.append(session_critic_loss)
         str_loss = str('Loss = %0.4f' % session_critic_loss)
-        print(('Episode %d/%d Reward = %d Time = %ds ' + (str_loss if replay else 'No replay')) % (i_session + 1, nb_episodes, session_reward, time.time() - start_time))
+        print(('Episode %d/%d Time = %ds ' + (str_loss if replay else 'No replay')) % (i_session + 1, nb_episodes, time.time() - start_time))
+
         start_time = time.time()
         
     writer.close()
-    tf.train.Saver().save(sess, '/home/ubuntu/models.h5', write_meta_graph = False)
-    return history
-
