@@ -22,12 +22,7 @@ DDPG is an algorithm that can concurrently learn a policy and a Q-function. DDPG
 
 To measure MusicBox's performance offline, I tracked multiple metrics such as music diversity and song skip rates. Compared to the original methods used in the dataset, MusicBox recommends a more diverse selection of music (9.3 % vs 7.6%) and also better identifies songs that are skipped by users (49% vs 54%).
 
-## Data
-
-I built MusicBox based on a real-world dataset from Spotify. As entire dataset is very large (e.g. 130 million listening sessions), I will not store it here on github. If you are interested, please check out their website [https://www.aicrowd.com/challenges/spotify-sequential-skip-prediction-challenge](https://www.aicrowd.com/challenges/spotify-sequential-skip-prediction-challenge).
-
 ## Example usage
-
 
 ```
 cd src
@@ -35,10 +30,13 @@ from main import *
 run('../data/user_data.tar.gz', '../data/music_data.tar.gz')
 ```
 
-
 ## Limitations
 
 One major impediment of applying reinforcement learning to recommender system is the lack of simulation platforms for sequential user interactions. This makes the full evaluation of MusicBox difficult, especially when it comes to reasoning about ordering of songs in a playlist.
+
+## Data
+
+I built MusicBox based on a real-world dataset from Spotify. As entire dataset is very large (e.g. 130 million listening sessions), I will not store it here on github. If you are interested, please check out their website [https://www.aicrowd.com/challenges/spotify-sequential-skip-prediction-challenge](https://www.aicrowd.com/challenges/spotify-sequential-skip-prediction-challenge).
 
 ## Inspiration
 
