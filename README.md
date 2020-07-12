@@ -24,7 +24,17 @@ To measure MusicBox's performance offline, I tracked multiple metrics such as mu
 
 ## Data
 
-I built MusicBox based on a real-world dataset from Spotify. As the dataset is very large (e.g. 130 million listening sessions), I will not store it here on github. If you are interested, please check out their website [https://www.aicrowd.com/challenges/spotify-sequential-skip-prediction-challenge](https://www.aicrowd.com/challenges/spotify-sequential-skip-prediction-challenge).
+I built MusicBox based on a real-world dataset from Spotify. As entire dataset is very large (e.g. 130 million listening sessions), I will not store it here on github. If you are interested, please check out their website [https://www.aicrowd.com/challenges/spotify-sequential-skip-prediction-challenge](https://www.aicrowd.com/challenges/spotify-sequential-skip-prediction-challenge).
+
+## Example usage
+
+
+```
+cd src
+from main import *
+run('../data/user_data.tar.gz', '../data/music_data.tar.gz')
+```
+
 
 ## Limitations
 
