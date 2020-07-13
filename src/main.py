@@ -41,5 +41,5 @@ def run(dataset, track_features, history_length = 10, ra_length=3):
     recsys(data, embeddings, history_length, ra_length)
         
 if __name__ == '__main__':
-    run('../data/user_data.tar.gz', '../data/music_data.tar.gz')
+    run('../data/user_mini_data.tar.gz', '../data/music_mini_data.tar.gz')
 

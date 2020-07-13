@@ -46,9 +46,9 @@ class DataGenerator():
                     path to the session data
         '''
         
-        user = pd.read_csv(datapath, compression = 'gzip')
+        user = pd.read_csv(datapath, compression = 'gzip', nrows = 100000)
         user = user.rename(columns = {user.columns[0]:'session_id'})
-        
+
         # Correct the labeling of skip
         # rating = 1 if user doesn't the skip the music, otherwise rating = 0
         user['rating'] = user.skip_2.astype(int)*-1+1
